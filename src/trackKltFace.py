@@ -9,8 +9,50 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 csv_path = os.path.join(OUTPUT_DIR, "klt_motion_log.csv")
 
-cascade_path = "/home/amathew052/anaconda3/envs/drowsy-cv/share/opencv4/haarcascades/haarcascade_frontalface_default.xml"
+# cascade_path = "/home/amathew052/anaconda3/envs/drowsy-cv/share/opencv4/haarcascades/haarcascade_frontalface_default.xml"
 
+# face_cascade = cv2.CascadeClassifier(cascade_path)
+
+# if face_cascade.empty():
+#     raise RuntimeError(f"Could not load Haar cascade from: {cascade_path}")
+
+# print(f"Loaded Haar cascade from: {cascade_path}")
+
+def find_haar_cascade():
+    cascade_filename = "haarcascade_frontalface_default.xml"
+
+    candidates = []
+
+    # Works for pip opencv-python
+    if hasattr(cv2, "data"):
+        candidates.append(os.path.join(cv2.data.haarcascades, cascade_filename))
+
+    # Works for Conda / Linux / WSL
+    conda_prefix = os.environ.get("CONDA_PREFIX")
+    if conda_prefix:
+        candidates.extend([
+            os.path.join(conda_prefix, "share", "opencv4", "haarcascades", cascade_filename),
+            os.path.join(conda_prefix, "share", "opencv", "haarcascades", cascade_filename),
+            os.path.join(conda_prefix, "Library", "etc", "haarcascades", cascade_filename),  # Windows Conda
+        ])
+
+    # Common Linux locations
+    candidates.extend([
+        "/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml",
+        "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml",
+    ])
+
+    for path in candidates:
+        if path and os.path.exists(path):
+            return path
+
+    raise FileNotFoundError(
+        "Could not find haarcascade_frontalface_default.xml. "
+        "Install OpenCV with: pip install opencv-python"
+    )
+
+
+cascade_path = find_haar_cascade()
 face_cascade = cv2.CascadeClassifier(cascade_path)
 
 if face_cascade.empty():
