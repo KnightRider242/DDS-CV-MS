@@ -2,11 +2,11 @@ __pycache__/
 *.pyc
 .env
 .venv/
-outputs/
+
 data/
 *.mp4
 *.avi
 *.mov
-*.csv
+
 .DS_Store
 .vscode/

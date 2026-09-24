@@ -9,14 +9,6 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 csv_path = os.path.join(OUTPUT_DIR, "klt_motion_log.csv")
 
-# cascade_path = "/home/amathew052/anaconda3/envs/drowsy-cv/share/opencv4/haarcascades/haarcascade_frontalface_default.xml"
-
-# face_cascade = cv2.CascadeClassifier(cascade_path)
-
-# if face_cascade.empty():
-#     raise RuntimeError(f"Could not load Haar cascade from: {cascade_path}")
-
-# print(f"Loaded Haar cascade from: {cascade_path}")
 
 def find_haar_cascade():
     cascade_filename = "haarcascade_frontalface_default.xml"
