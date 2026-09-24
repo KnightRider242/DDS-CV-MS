@@ -1,4 +1,5 @@
 # DDS-CV-MS
+
 Building a system that detects drowsiness from a webcam by combining eye closure, blink duration, yawning, and head-nod motion.
 
 # Confidence-Aware Driver Drowsiness Detection Using KLT and Optical Flow
@@ -43,3 +44,86 @@ Tracking confidence remains high across all sessions, and forward-backward error
 - average motion speed
 - forward-backward tracking error
 - tracking confidence
+
+## Sprint 3 — ROI-Specific KLT Tracking
+
+### Objective
+
+Extend the whole-face KLT tracker into region-specific tracking so that motion from the eyes, mouth, and head can be analysed independently.
+
+### ROIs
+
+The current Sprint 3 tracker uses four approximate facial regions:
+
+- left eye
+- right eye
+- mouth
+- head
+
+The regions are derived from the detected face bounding box. Shi–Tomasi features are detected independently inside each ROI and tracked between consecutive frames using pyramidal Lucas–Kanade optical flow.
+
+### Sprint 3 Features
+
+For each ROI, the tracker records:
+
+- number of tracked points
+- mean horizontal displacement
+- mean vertical displacement
+- horizontal motion standard deviation
+- vertical motion standard deviation
+- mean motion speed
+- forward-backward error
+- tracking confidence
+
+Additional combined features are:
+
+- `eye_mean_speed`
+- `eye_mean_v`
+- `mouth_speed`
+- `mouth_mean_v`
+- `head_speed`
+- `head_mean_v`
+- `overall_tracking_confidence`
+
+### Robustness Improvements
+
+Sprint 3 also improves the tracking pipeline by:
+
+- automatically locating the OpenCV Haar cascade
+- using histogram equalisation before face detection
+- waiting for a detectable face instead of requiring detection on the first webcam frame
+- periodically redetecting the face to update ROI locations
+- reinitialising ROI features when too few trackable points remain
+- using forward-backward error to reject unreliable correspondences
+
+### Sprint 3 Experiment
+
+Record approximately 30–60 seconds for each condition:
+
+1. normal
+2. blinking
+3. fake drowsy / slow eye closure
+4. head nod
+5. optional: yawning
+
+Save each session as a separate CSV in `outputs/`.
+
+### Research Question for Sprint 3
+
+Does region-specific KLT produce more discriminative temporal motion features for eye closure, blinking, yawning, and head nodding than whole-face KLT?
+
+### Expected Analysis
+
+The results should be analysed rather than assumed. In particular:
+
+- compare eye motion between normal, blinking, and fake-drowsy sessions
+- compare mouth motion during yawning
+- compare head motion during nodding
+- examine tracking confidence and forward-backward error for each ROI
+- determine whether the ROI signals provide clearer temporal separation than the Sprint 2 whole-face signals
+
+### Status
+
+**Sprint 3 implementation complete. Experimental data collection pending.**
+
+After the four main recordings are complete, the next step is to generate comparable plots and quantify the ROI-specific motion distributions before moving to windowed features and classification.
