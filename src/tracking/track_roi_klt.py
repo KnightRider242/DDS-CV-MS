@@ -95,10 +95,13 @@ def detect_face(gray):
     return largest_face(faces)
 
 
-def wait_for_initial_face(cap):
+def wait_for_initial_face(cap, display=True):
     """
     Haar detection can miss the first webcam frame.
     This waits until the face is visible instead of crashing.
+
+    In headless mode, frames are still consumed until a face is found,
+    but no OpenCV window is created.
     """
     print("Waiting for face detection. Look at the camera...")
 
@@ -135,18 +138,21 @@ def wait_for_initial_face(cap):
                 (0, 255, 0),
                 2,
             )
-            cv2.imshow("Sprint 3: ROI KLT Tracker", display)
-            cv2.waitKey(500)
+            if display:
+                cv2.imshow("Sprint 3: ROI KLT Tracker", display)
+                cv2.waitKey(500)
+
             print("Face detected. Starting ROI tracking.")
             return frame, gray, face_box
 
-        cv2.imshow("Sprint 3: ROI KLT Tracker", display)
+        if display:
+            cv2.imshow("Sprint 3: ROI KLT Tracker", display)
 
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):
-            cap.release()
-            cv2.destroyAllWindows()
-            raise SystemExit("Stopped while waiting for face.")
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                cap.release()
+                cv2.destroyAllWindows()
+                raise SystemExit("Stopped while waiting for face.")
 
 
 def clip_rect(rect, width, height):
@@ -434,6 +440,12 @@ def main():
         help="Forward-backward error threshold",
     )
 
+    parser.add_argument(
+        "--no-display",
+        action="store_true",
+        help="Run without opening an OpenCV display window",
+    )
+
     args = parser.parse_args()
 
     source = parse_source(args.source)
@@ -449,7 +461,9 @@ def main():
     if not cap.isOpened():
         raise RuntimeError(f"Could not open video source: {args.source}")
 
-    frame, prev_gray, face_box = wait_for_initial_face(cap)
+    display = not args.no_display
+
+    frame, prev_gray, face_box = wait_for_initial_face(cap, display=display)
 
     rois = get_face_rois(face_box, frame.shape)
     roi_points = initialize_all_roi_points(prev_gray, rois)
@@ -527,35 +541,39 @@ def main():
 
             writer.writerow(row)
 
-            for name, rect in rois.items():
-                draw_roi(frame, rect, name)
-                draw_points(frame, roi_points.get(name))
+            if display:
+                for name, rect in rois.items():
+                    draw_roi(frame, rect, name)
+                    draw_points(frame, roi_points.get(name))
 
-            cv2.putText(
-                frame,
-                (
-                    f"eye_speed={row['eye_mean_speed']:.3f} | "
-                    f"mouth={row['mouth_speed']:.3f} | "
-                    f"head_v={row['head_mean_v']:.3f}"
-                ),
-                (20, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.65,
-                (0, 255, 0),
-                2,
-            )
+                cv2.putText(
+                    frame,
+                    (
+                        f"eye_speed={row['eye_mean_speed']:.3f} | "
+                        f"mouth={row['mouth_speed']:.3f} | "
+                        f"head_v={row['head_mean_v']:.3f}"
+                    ),
+                    (20, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65,
+                    (0, 255, 0),
+                    2,
+                )
 
-            cv2.imshow("Sprint 3: ROI KLT Tracker", frame)
+                cv2.imshow("Sprint 3: ROI KLT Tracker", frame)
 
             prev_gray = gray.copy()
 
-            key = cv2.waitKey(1) & 0xFF
+            if display:
+                key = cv2.waitKey(1) & 0xFF
 
-            if key == ord("q"):
-                break
+                if key == ord("q"):
+                    break
 
     cap.release()
-    cv2.destroyAllWindows()
+
+    if display:
+        cv2.destroyAllWindows()
 
     print(f"Saved ROI KLT log to: {args.output}")
 
