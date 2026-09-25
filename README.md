@@ -28,10 +28,13 @@ Current Sprint 4 work includes:
 - subject-aware metadata using `subject_uid`
 - a 12-video pilot spanning Normal, Talking, Yawning, and Talking&Yawning
 - ROI-based KLT tracking of left eye, right eye, mouth, and head
+- two-stage Haar face initialization for difficult poses
 - video-time-based temporal indexing using source FPS
 - tracking reliability using point coverage and forward-backward error
 - 5-second temporal-window feature extraction
-- pilot condition and reliability summaries
+- full 320-video Mirror temporal processing
+- subject-level temporal aggregation
+- paired subject-level statistical analysis
 
 The current pilot contains 12 videos from 12 unique subjects. The full YawDD Mirror subset contains 320 labelled recordings; the 29 Dash recordings are kept separate because their filenames do not provide the same condition labels.
 
@@ -153,7 +156,21 @@ python src/analysis/analyze_yawdd_pilot.py
 python src/analysis/analyze_yawdd_temporal.py
 ```
 
+### Aggregate temporal features by subject
+
+```bash
+python src/analysis/analyze_yawdd_subject.py
+```
+
+### Run subject-level paired statistics
+
+```bash
+python src/analysis/analyze_yawdd_subject_stats.py
+```
+
 Generated CSVs and figures belong under `outputs/` and should not be committed as routine generated artifacts.
+
+The full YawDD temporal baseline currently contains 1,627 five-second windows from 320 Mirror videos and 90 subjects. Subject-level analysis is performed before inferential statistics.
 
 ---
 
