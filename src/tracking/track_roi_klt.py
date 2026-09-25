@@ -78,13 +78,36 @@ def largest_face(faces):
     return max(faces, key=lambda r: r[2] * r[3])
 
 
+# def detect_face(gray):
+#     """
+#     Robust Haar face detection.
+#     Histogram equalisation helps under weak or uneven lighting.
+#     """
+#     gray_eq = cv2.equalizeHist(gray)
+
+#     faces = face_cascade.detectMultiScale(
+#         gray_eq,
+#         scaleFactor=1.1,
+#         minNeighbors=4,
+#         minSize=(60, 60),
+#     )
+
+#     return largest_face(faces)
+
 def detect_face(gray):
     """
-    Robust Haar face detection.
-    Histogram equalisation helps under weak or uneven lighting.
+    Two-stage Haar face detection.
+
+    Stage 1:
+        Original strict detector used for the main dataset.
+
+    Stage 2:
+        More permissive detector used only when Stage 1 fails,
+        improving initialization under non-frontal or difficult poses.
     """
     gray_eq = cv2.equalizeHist(gray)
 
+    # Primary detector
     faces = face_cascade.detectMultiScale(
         gray_eq,
         scaleFactor=1.1,
@@ -92,8 +115,18 @@ def detect_face(gray):
         minSize=(60, 60),
     )
 
-    return largest_face(faces)
+    if len(faces) > 0:
+        return largest_face(faces)
 
+    # Fallback detector
+    faces = face_cascade.detectMultiScale(
+        gray_eq,
+        scaleFactor=1.05,
+        minNeighbors=2,
+        minSize=(40, 40),
+    )
+
+    return largest_face(faces)
 
 def wait_for_initial_face(cap, display=True):
     """

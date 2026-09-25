@@ -2,8 +2,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-
-INPUT_DIR = Path("outputs/YawDD/pilot_csv")
+#INPUT_DIR = Path("outputs/YawDD/pilot_csv")
+INPUT_DIR = Path("outputs/YawDD/full_csv")
 OUTPUT_DIR = Path("outputs/YawDD/temporal_analysis")
 METADATA = Path("outputs/YawDD/metadata.csv")
 
