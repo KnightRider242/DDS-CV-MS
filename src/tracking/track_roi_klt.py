@@ -172,7 +172,7 @@ def wait_for_initial_face(cap, display=True):
                 2,
             )
             if display:
-                cv2.imshow("Sprint 3: ROI KLT Tracker", display)
+                cv2.imshow("Sprint 3: ROI KLT Tracker", display_frame)
                 cv2.waitKey(500)
 
             print("Face detected. Starting ROI tracking.")
