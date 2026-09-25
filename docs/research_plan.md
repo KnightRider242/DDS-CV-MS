@@ -23,15 +23,53 @@ Drowsiness-related behaviours contain temporal patterns that are not fully repre
 7. Extract temporal biomarkers.
 8. Evaluate a non-RL baseline before introducing an adaptive decision layer.
 
+## Current Sprint 4 evidence
+
+The full labelled YawDD Mirror subset has been processed at the temporal-feature level:
+
+- 320 videos
+- 90 subjects
+- 1,627 five-second windows
+
+Subject-level analysis uses a window → video → subject × condition hierarchy so that temporal windows are not treated as independent observations.
+
+Normal/Talking comparisons across 90 paired subjects show differences in eye, mouth, and head temporal motion summaries. Normal/Yawning comparisons show that yawning-labelled recordings do not simply have higher raw motion than Normal. The binary reliable-frame percentage is close to saturation, while feature-point counts and forward-backward error provide more continuous tracking-quality variation.
+
+These results support further testing of confidence-aware temporal features, but they do not establish a drowsiness classifier because YawDD labels yawning/talking behaviour rather than genuine drowsiness.
+
 ## Planned evaluation
 
 - Static eye/mouth measurements vs temporal KLT features
 - Motion-only vs motion + reliability
+- Motion + temporal statistics vs motion + temporal statistics + reliability
 - ROI ablation
 - Tracking-component ablation
 - Robustness to illumination, head pose, and tracking loss
 - Subject-independent train/test separation
 - Multiple subjects and sessions
+
+## Feature groups for the next experiment
+
+### A. Motion only
+
+- eye motion
+- mouth motion
+- head motion
+
+### B. Motion + temporal statistics
+
+- temporal means
+- variability
+- P95 motion
+- other window-level temporal descriptors
+
+### C. Motion + temporal statistics + reliability
+
+- feature-point coverage
+- forward-backward error
+- tracking-quality temporal statistics
+
+The next comparison should use subject-independent splits and evaluate whether reliability features add predictive information beyond temporal motion features.
 
 ## Scope note
 
