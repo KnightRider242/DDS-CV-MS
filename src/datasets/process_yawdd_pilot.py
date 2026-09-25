@@ -8,7 +8,7 @@ import pandas as pd
 INPUT = Path("outputs/YawDD/pilot_12.csv")
 OUTPUT_DIR = Path("outputs/YawDD/pilot_csv")
 
-TRACKER = Path("src/track_roi_klt.py")
+TRACKER = Path("src/tracking/track_roi_klt.py")
 
 
 def main():
