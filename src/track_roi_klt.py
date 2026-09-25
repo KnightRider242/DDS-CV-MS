@@ -348,10 +348,24 @@ def build_header():
     return base + roi_columns + summary
 
 
-def build_row(timestamp, start_time, frame_idx, face_detected, all_metrics):
+# def build_row(timestamp, start_time, frame_idx, face_detected, all_metrics):
+#     row = {
+#         "timestamp": timestamp,
+#         "elapsed_sec": timestamp - start_time,
+#         "frame_idx": frame_idx,
+#         "face_detected": int(face_detected),
+#     }
+
+def build_row(timestamp, start_time, frame_idx, face_detected, all_metrics, fps=None):
+
+    if fps is not None and fps > 0:
+        elapsed_sec = frame_idx / fps
+    else:
+        elapsed_sec = timestamp - start_time
+
     row = {
         "timestamp": timestamp,
-        "elapsed_sec": timestamp - start_time,
+        "elapsed_sec": elapsed_sec,
         "frame_idx": frame_idx,
         "face_detected": int(face_detected),
     }
@@ -425,6 +439,13 @@ def main():
     source = parse_source(args.source)
     cap = cv2.VideoCapture(source)
 
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    if fps <= 0:
+        fps = 30.0
+
+    print(f"Video FPS: {fps:.3f}")
+
     if not cap.isOpened():
         raise RuntimeError(f"Could not open video source: {args.source}")
 
@@ -487,12 +508,21 @@ def main():
 
             roi_points = updated_roi_points
 
+            # row = build_row(
+            #     timestamp=timestamp,
+            #     start_time=start_time,
+            #     frame_idx=frame_idx,
+            #     face_detected=face_detected,
+            #     all_metrics=all_metrics,
+            # )
+
             row = build_row(
-                timestamp=timestamp,
-                start_time=start_time,
-                frame_idx=frame_idx,
-                face_detected=face_detected,
-                all_metrics=all_metrics,
+                timestamp,
+                start_time,
+                frame_idx,
+                face_detected,
+                all_metrics,
+                fps=fps
             )
 
             writer.writerow(row)

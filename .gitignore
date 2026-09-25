@@ -7,6 +7,9 @@ data/
 *.mp4
 *.avi
 *.mov
-
+outputs/
 .DS_Store
 .vscode/
+outputs/
+data/
+*.csv
