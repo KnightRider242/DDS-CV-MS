@@ -114,10 +114,10 @@ def wait_for_initial_face(cap, display=True):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         face_box = detect_face(gray)
 
-        display = frame.copy()
+        display_frame = frame.copy()
 
         cv2.putText(
-            display,
+            display_frame,
             "Waiting for face... look at camera",
             (20, 30),
             cv2.FONT_HERSHEY_SIMPLEX,
@@ -128,9 +128,9 @@ def wait_for_initial_face(cap, display=True):
 
         if face_box is not None:
             x, y, w, h = face_box
-            cv2.rectangle(display, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.rectangle(display_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(
-                display,
+                display_frame,
                 "Face detected. Starting...",
                 (20, 60),
                 cv2.FONT_HERSHEY_SIMPLEX,
